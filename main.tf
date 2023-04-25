@@ -6,7 +6,7 @@ resource "flexibleengine_obs_bucket" "admin_bucket" {
 
 terraform {
   cloud {
-    organization = "algue"
+    organization = "algue" #project
 
     workspaces {
       name = "demo_terra_k8s"
