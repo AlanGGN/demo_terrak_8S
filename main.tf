@@ -22,8 +22,8 @@ terraform {
 }
 
 provider "flexibleengine" {
-  domain_name = "OCB0001661"
-  tenant_name = "eu-west-0_pme"
+  domain_name = "OCB0001671"
+  tenant_name = "eu-west-0_algue"
   region      = "eu-west-0"
   auth_url    = "https://iam.eu-west-0.prod-cloud-ocb.orange-business.com/v3"
 }
