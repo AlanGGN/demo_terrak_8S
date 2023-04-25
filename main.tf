@@ -64,7 +64,7 @@ resource "flexibleengine_networking_network_v2" "back_net" {
 }
 
 # Create Frontend subnet inside the network
-resource "flexibleengine_networking_subnet_v2" "front_subnet" {
+resource "flexibleengine_vpc_subnet_v1" "front_subnet" {
   name            = "${var.project}-front_subnet-${random_string.id.result}"
   cidr            = "${var.front_subnet_cidr}"
   network_id      = flexibleengine_networking_network_v2.front_net.id
@@ -73,7 +73,7 @@ resource "flexibleengine_networking_subnet_v2" "front_subnet" {
 }
 
 # Create Backend subnet inside the network
-resource "flexibleengine_networking_subnet_v2" "back_subnet" {
+resource "flexibleengine_vpc_subnet_v1" "back_subnet" {
   name            = "${var.project}-back_subnet-${random_string.id.result}"
   cidr            = "${var.back_subnet_cidr}"
   network_id      = flexibleengine_networking_network_v2.back_net.id
@@ -84,13 +84,13 @@ resource "flexibleengine_networking_subnet_v2" "back_subnet" {
 # Create Router interface for Frontend Network
 resource "flexibleengine_networking_router_interface_v2" "front_router_interface" {
   router_id = flexibleengine_vpc_v1.vpc.id
-  subnet_id = flexibleengine_networking_subnet_v2.front_subnet.id
+  subnet_id = flexibleengine_vpc_subnet_v1.front_subnet.id
 }
 
 # Create Router interface for Backend Network
 resource "flexibleengine_networking_router_interface_v2" "back_router_interface" {
   router_id = flexibleengine_vpc_v1.vpc.id
-  subnet_id = flexibleengine_networking_subnet_v2.back_subnet.id
+  subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.id
 }
 
 #Create an Elastic IP for Bastion VM
@@ -197,7 +197,7 @@ resource "flexibleengine_nat_snat_rule_v2" "snat_2" {
 resource "flexibleengine_lb_loadbalancer_v2" "elb_1" {
   depends_on = [time_sleep.wait_for_vpc]  
   description   = "ELB for project ${var.project} (${random_string.id.result})"
-  vip_subnet_id = flexibleengine_networking_subnet_v2.back_subnet.id
+  vip_subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.id
   name = "${var.project}-ELB-${random_string.id.result}"
 
 }
@@ -256,7 +256,7 @@ resource "flexibleengine_compute_floatingip_associate_v2" "fip_1" {
 
 #Create MySQL RDS
 resource "flexibleengine_rds_instance_v3" "instance" {
-  depends_on = [flexibleengine_networking_subnet_v2.back_subnet]
+  depends_on = [flexibleengine_vpc_subnet_v1.back_subnet]
   name              = "${var.project}-MySQL-${random_string.id.result}"
   flavor            = "rds.mysql.c6.large.2"
   availability_zone = ["eu-west-0b"]
