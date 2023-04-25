@@ -239,7 +239,7 @@ resource "flexibleengine_compute_instance_v2" "instance" {
     uuid = flexibleengine_networking_network_v2.front_net.id
   }
   block_device { # Boots from volume
-    uuid                  = "c2280a5f-159f-4489-a107-7cf0c7efdb21"
+    uuid                  = "6ab649f9-d0b8-4e4f-aac8-a5d0a3fed1c9" # ubuntu22.04
     source_type           = "image"
     volume_size           = "40"
     boot_index            = 0
