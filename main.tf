@@ -6,12 +6,13 @@ resource "flexibleengine_obs_bucket" "admin_bucket" {
 
 terraform {
   cloud {
-    organization = "pmefetest"
+    organization = "algue"
 
     workspaces {
-      name = "demo_forrester"
+      name = "demo_terra_k8s"
     }
   }
+}
 
   required_providers {
     flexibleengine = {
