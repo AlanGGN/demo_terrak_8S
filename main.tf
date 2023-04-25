@@ -12,7 +12,7 @@ terraform {
       name = "demo_terra_k8s"
     }
   }
-}
+
 
   required_providers {
     flexibleengine = {
