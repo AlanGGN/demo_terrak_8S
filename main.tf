@@ -80,13 +80,13 @@ resource "flexibleengine_vpc_subnet_v1" "back_subnet" {
   gateway_ip      = "${var.back_gateway_ip}"
  
 }
-resource "flexibleengine_networking_port_v2" "port_1" {
-  name           = "port_1"
+resource "flexibleengine_networking_port_v2" "front_port" {
+  name           = "front_port"
   network_id     = flexibleengine_vpc_subnet_v1.front_subnet.id
   admin_state_up = "true"
 }
-resource "flexibleengine_networking_port_v2" "port_1" {
-  name           = "port_1"
+resource "flexibleengine_networking_port_v2" "back_port" {
+  name           = "back_port"
   network_id     = flexibleengine_vpc_subnet_v1.back_subnet.id
   admin_state_up = "true"
 }
@@ -206,7 +206,7 @@ resource "flexibleengine_nat_snat_rule_v2" "snat_2" {
 resource "flexibleengine_lb_loadbalancer_v2" "elb_1" {
   depends_on = [time_sleep.wait_for_vpc]  
   description   = "ELB for project ${var.project} (${random_string.id.result})"
-  vip_subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.id
+  vip_subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.ipv4_subnet_id
   name = "${var.project}-ELB-${random_string.id.result}"
 
 }
