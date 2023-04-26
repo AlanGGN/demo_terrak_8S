@@ -80,7 +80,16 @@ resource "flexibleengine_vpc_subnet_v1" "back_subnet" {
   gateway_ip      = "${var.back_gateway_ip}"
  
 }
-
+resource "flexibleengine_networking_port_v2" "port_1" {
+  name           = "port_1"
+  network_id     = flexibleengine_vpc_subnet_v1.front_subnet.id
+  admin_state_up = "true"
+}
+resource "flexibleengine_networking_port_v2" "port_1" {
+  name           = "port_1"
+  network_id     = flexibleengine_vpc_subnet_v1.back_subnet.id
+  admin_state_up = "true"
+}
 # Create Router interface for Frontend Network
 # resource "flexibleengine_networking_router_interface_v2" "front_router_interface" {
 #   router_id = flexibleengine_vpc_v1.vpc.id
