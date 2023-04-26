@@ -6,7 +6,7 @@ resource "flexibleengine_obs_bucket" "admin_bucket" {
 
 terraform {
   cloud {
-    organization = "algue" #projectYt
+    organization = "algue" #projectY
 
     workspaces {
       name = "demo_terra_k8s"
@@ -52,22 +52,22 @@ resource "flexibleengine_vpc_v1" "vpc" {
 }
 
 # Create Frontend network inside the VPC
-resource "flexibleengine_networking_network_v2" "front_net" {
+resource "flexibleengine_vpc_v1" "front_net" {
   name           = "${var.project}-front_net-${random_string.id.result}"
-  admin_state_up = "true"
+  cidr = "${var.vpc_cidr}"
 }
 
 # Create Backend network inside the VPC
-resource "flexibleengine_networking_network_v2" "back_net" {
+resource "flexibleengine_vpc_v1" "back_net" {
   name           = "${var.project}-back_net-${random_string.id.result}"
-  admin_state_up = "true"
+  cidr = "${var.vpc_cidr}"
 }
 
 # Create Frontend subnet inside the network
 resource "flexibleengine_vpc_subnet_v1" "front_subnet" {
   name            = "${var.project}-front_subnet-${random_string.id.result}"
   cidr            = "${var.front_subnet_cidr}"
-  network_id      = flexibleengine_networking_network_v2.front_net.id
+  vpc_id      = flexibleengine_vpc_v1.front_net.id
   gateway_ip      = "${var.front_gateway_ip}"
   dns_nameservers = ["100.125.0.41", "100.126.0.41"]
 }
@@ -76,22 +76,22 @@ resource "flexibleengine_vpc_subnet_v1" "front_subnet" {
 resource "flexibleengine_vpc_subnet_v1" "back_subnet" {
   name            = "${var.project}-back_subnet-${random_string.id.result}"
   cidr            = "${var.back_subnet_cidr}"
-  network_id      = flexibleengine_networking_network_v2.back_net.id
+  vpc_id      = flexibleengine_vpc_v1.back_net.id
   gateway_ip      = "${var.back_gateway_ip}"
   dns_nameservers = ["100.125.0.41", "100.126.0.41"]
 }
 
 # Create Router interface for Frontend Network
-resource "flexibleengine_networking_router_interface_v2" "front_router_interface" {
-  router_id = flexibleengine_vpc_v1.vpc.id
-  subnet_id = flexibleengine_vpc_subnet_v1.front_subnet.id
-}
+# resource "flexibleengine_networking_router_interface_v2" "front_router_interface" {
+#   router_id = flexibleengine_vpc_v1.vpc.id
+#   subnet_id = flexibleengine_vpc_subnet_v1.front_subnet.id
+# }
 
-# Create Router interface for Backend Network
-resource "flexibleengine_networking_router_interface_v2" "back_router_interface" {
-  router_id = flexibleengine_vpc_v1.vpc.id
-  subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.id
-}
+# # Create Router interface for Backend Network
+# resource "flexibleengine_networking_router_interface_v2" "back_router_interface" {
+#   router_id = flexibleengine_vpc_v1.vpc.id
+#   subnet_id = flexibleengine_vpc_subnet_v1.back_subnet.id
+# }
 
 #Create an Elastic IP for Bastion VM
 resource "flexibleengine_vpc_eip_v1" "eip" {
