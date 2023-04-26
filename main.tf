@@ -69,7 +69,7 @@ resource "flexibleengine_vpc_subnet_v1" "front_subnet" {
   cidr            = "${var.front_subnet_cidr}"
   vpc_id      = flexibleengine_vpc_v1.front_net.id
   gateway_ip      = "${var.front_gateway_ip}"
-  dns_nameservers = ["100.125.0.41", "100.126.0.41"]
+ 
 }
 
 # Create Backend subnet inside the network
@@ -78,7 +78,7 @@ resource "flexibleengine_vpc_subnet_v1" "back_subnet" {
   cidr            = "${var.back_subnet_cidr}"
   vpc_id      = flexibleengine_vpc_v1.back_net.id
   gateway_ip      = "${var.back_gateway_ip}"
-  dns_nameservers = ["100.125.0.41", "100.126.0.41"]
+ 
 }
 
 # Create Router interface for Frontend Network
@@ -174,7 +174,7 @@ resource "flexibleengine_nat_gateway_v2" "nat_1" {
   description = "demo NATGW for terraform"
   spec        = "1"
   vpc_id      = flexibleengine_vpc_v1.vpc.id
-  subnet_id   = flexibleengine_networking_network_v2.front_net.id
+  subnet_id   = flexibleengine_vpc_subnet_v1.front_net.id
 }
 
 #Add SNAT rule for Frontend subnet
@@ -182,7 +182,7 @@ resource "flexibleengine_nat_snat_rule_v2" "snat_1" {
   depends_on = [time_sleep.wait_for_vpc]  
   nat_gateway_id = flexibleengine_nat_gateway_v2.nat_1.id
   floating_ip_id = flexibleengine_vpc_eip_v1.eip_natgw.id
-  subnet_id      = flexibleengine_networking_network_v2.front_net.id
+  subnet_id      = flexibleengine_vpc_subnet_v1.front_net.id
 }
 
 #Add SNAT rule for Backend subnet
@@ -190,7 +190,7 @@ resource "flexibleengine_nat_snat_rule_v2" "snat_2" {
   depends_on = [time_sleep.wait_for_vpc]  
   nat_gateway_id = flexibleengine_nat_gateway_v2.nat_1.id
   floating_ip_id = flexibleengine_vpc_eip_v1.eip_natgw.id
-  subnet_id      = flexibleengine_networking_network_v2.back_net.id
+  subnet_id      = flexibleengine_vpc_subnet_v1.back_net.id
 }
 
 #Create ELB
@@ -236,7 +236,7 @@ resource "flexibleengine_compute_instance_v2" "instance" {
   user_data = data.template_cloudinit_config.config.rendered
   availability_zone = "eu-west-0a"
   network {
-    uuid = flexibleengine_networking_network_v2.front_net.id
+    uuid = flexibleengine_vpc_subnet_v1.front_net.id
   }
   block_device { # Boots from volume
     uuid                  = "6ab649f9-d0b8-4e4f-aac8-a5d0a3fed1c9" # ubuntu22.04
@@ -262,7 +262,7 @@ resource "flexibleengine_rds_instance_v3" "instance" {
   availability_zone = ["eu-west-0b"]
   security_group_id = flexibleengine_networking_secgroup_v2.secgroup.id
   vpc_id            = flexibleengine_vpc_v1.vpc.id
-  subnet_id         = flexibleengine_networking_network_v2.back_net.id
+  subnet_id         = flexibleengine_vpc_subnet_v1.back_net.id
 
   db {
     type     = "MySQL"
@@ -306,7 +306,7 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
   cluster_type           = "VirtualMachine"
   flavor_id              = "cce.s1.small"
   vpc_id                 = flexibleengine_vpc_v1.vpc.id
-  subnet_id              = flexibleengine_networking_network_v2.back_net.id
+  subnet_id              = flexibleengine_vpc_subnet_v1.back_net.id
   container_network_type = "overlay_l2"
   authentication_mode    = "rbac"
   annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
