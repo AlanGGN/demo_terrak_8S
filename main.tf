@@ -324,10 +324,7 @@ resource "flexibleengine_cce_addon_v3" "autoscaler" {
   cluster_id = var.cluster_id
   template_name = "autoscaler"
   version    = "1.19.6"
-  values {
-    basic  = jsonencode(jsondecode(data.flexibleengine_cce_addon_template.autoscaler.spec).basic)
-    flavor = jsonencode(jsondecode(data.flexibleengine_cce_addon_template.autoscaler.spec).parameters.flavor2)
-  }
+
 }
 
 resource "flexibleengine_fgs_function" "function" {
