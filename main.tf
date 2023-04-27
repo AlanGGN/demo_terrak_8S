@@ -6,7 +6,7 @@ resource "flexibleengine_obs_bucket" "admin_bucket" {
 
 terraform {
   cloud {
-    organization = "algue" #projectYz
+    organization = "algue" #projectY
 
     workspaces {
       name = "demo_terra_k8s"
@@ -320,6 +320,15 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
   authentication_mode    = "rbac"
   annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
 }
+resource "flexibleengine_cce_addon_v3" "autoscaler" {
+  cluster_id = var.cluster_id
+  template_name = "autoscaler"
+  version    = "1.19.6"
+  values {
+    basic  = jsonencode(jsondecode(data.flexibleengine_cce_addon_template.autoscaler.spec).basic)
+    flavor = jsonencode(jsondecode(data.flexibleengine_cce_addon_template.autoscaler.spec).parameters.flavor2)
+  }
+}
 
 resource "flexibleengine_fgs_function" "function" {
   name        = "${var.project}-FGS-${random_string.id.result}"
@@ -377,8 +386,8 @@ resource "flexibleengine_cce_node_pool_v3" "pool" {
   os        = "EulerOS 2.5"
   flavor_id = "s6.xlarge.2"
   key_pair = flexibleengine_compute_keypair_v2.keypair.name
-  initial_node_count = 2
-  scale_enable = false
+  initial_node_count = 1
+  scale_enable = true
   min_node_count = 1
   max_node_count = 5
   type = "vm"
