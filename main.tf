@@ -6,7 +6,7 @@ resource "flexibleengine_obs_bucket" "admin_bucket" {
 
 terraform {
   cloud {
-    organization = "algue" #projectYZ
+    organization = "algue" #projectY
 
     workspaces {
       name = "demo_terra_k8s"
@@ -323,6 +323,7 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
 resource "flexibleengine_cce_addon_v3" "autoscaler" {
   cluster_id = flexibleengine_cce_cluster_v3.cluster.id
   template_name = "autoscaler"
+  insecure = true
   version    = "1.25.7"
 
 }
