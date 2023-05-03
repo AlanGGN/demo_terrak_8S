@@ -26,6 +26,7 @@ provider "flexibleengine" {
   tenant_name = "eu-west-0_algue"
   region      = "eu-west-0"
   auth_url    = "https://iam.eu-west-0.prod-cloud-ocb.orange-business.com/v3"
+  insecure = true
 }
     
 # Creation of a Key Pair
