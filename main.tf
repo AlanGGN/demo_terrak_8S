@@ -321,7 +321,7 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
   #annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
 }
 resource "flexibleengine_cce_addon_v3" "autoscaler" {
-  cluster_id = var.cluster_id
+  cluster_id = flexibleengine_cce_cluster_v3.cluster.cluster_id
   template_name = "autoscaler"
   version    = "1.25.7"
 
