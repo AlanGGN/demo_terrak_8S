@@ -318,12 +318,12 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
   subnet_id              = flexibleengine_vpc_subnet_v1.back_subnet.id
   container_network_type = "overlay_l2"
   authentication_mode    = "rbac"
-  annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
+  #annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
 }
 resource "flexibleengine_cce_addon_v3" "autoscaler" {
   cluster_id = var.cluster_id
   template_name = "autoscaler"
-  version    = "1.19.6"
+  version    = "1.25.7"
 
 }
 
