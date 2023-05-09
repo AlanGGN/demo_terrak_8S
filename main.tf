@@ -321,55 +321,55 @@ resource "flexibleengine_cce_cluster_v3" "cluster" {
   authentication_mode    = "rbac"
   #annotations            = { "cluster.install.addons.external/install" = "[{\"addonTemplateName\":\"icagent\"}]" }
 }
-resource "flexibleengine_cce_addon_v3" "autoscaler" {
-  cluster_id = flexibleengine_cce_cluster_v3.cluster.id
-  template_name = "autoscaler"
-  version    = "1.25.7"
+#resource "flexibleengine_cce_addon_v3" "autoscaler" {
+#  cluster_id = flexibleengine_cce_cluster_v3.cluster.id
+#  template_name = "autoscaler"
+# version    = "1.25.7"
+#
+#}
 
-}
+# resource "flexibleengine_fgs_function" "function" {
+#   name        = "${var.project}-FGS-${random_string.id.result}"
+#   app         = "default"
+#   agency      = "FGSAccessCCE"
+#   description = "Hibernate CCE cluster"
+#   handler     = "index.handler"
+#   memory_size = 128
+#   timeout     = 3
+#   runtime     = "Python3.6"
+#   code_type   = "inline"
+#   func_code   = <<EOF
+# # -*- coding:utf-8 -*-
+# import json
+# import requests
 
-resource "flexibleengine_fgs_function" "function" {
-  name        = "${var.project}-FGS-${random_string.id.result}"
-  app         = "default"
-  agency      = "FGSAccessCCE"
-  description = "Hibernate CCE cluster"
-  handler     = "index.handler"
-  memory_size = 128
-  timeout     = 3
-  runtime     = "Python3.6"
-  code_type   = "inline"
-  func_code   = <<EOF
-# -*- coding:utf-8 -*-
-import json
-import requests
+# def handler (event, context):
+#     Endpoint = "eu-west-0.prod-cloud-ocb.orange-business.com"
+#     Project = context.getProjectID()
+#     print("Authentication and Getting token")
+#     token = context.getToken()
 
-def handler (event, context):
-    Endpoint = "eu-west-0.prod-cloud-ocb.orange-business.com"
-    Project = context.getProjectID()
-    print("Authentication and Getting token")
-    token = context.getToken()
-
-    print("Hibernate CCE latest cluster")
-    url = f"https://cce.{Endpoint}/api/v3/projects/{Project}/clusters/${flexibleengine_cce_cluster_v3.cluster.id}/operation/hibernate"
-    payload={}
-    headers = {
-    'Content-Type': 'application/json',
-    'X-Auth-Token': token,
-    'X-Cluster-UUID': '${flexibleengine_cce_cluster_v3.cluster.id}'
-    }
-    response = requests.request("POST", url, headers=headers, data=payload)
-    print(response.status_code)
-    print(response.text)
-    return {
-        "statusCode": 200,
-        "isBase64Encoded": False,
-        "body": json.dumps(event),
-        "headers": {
-            "Content-Type": "application/json"
-        }
-    }
-EOF
-}
+#     print("Hibernate CCE latest cluster")
+#     url = f"https://cce.{Endpoint}/api/v3/projects/{Project}/clusters/${flexibleengine_cce_cluster_v3.cluster.id}/operation/hibernate"
+#     payload={}
+#     headers = {
+#     'Content-Type': 'application/json',
+#     'X-Auth-Token': token,
+#     'X-Cluster-UUID': '${flexibleengine_cce_cluster_v3.cluster.id}'
+#     }
+#     response = requests.request("POST", url, headers=headers, data=payload)
+#     print(response.status_code)
+#     print(response.text)
+#     return {
+#         "statusCode": 200,
+#         "isBase64Encoded": False,
+#         "body": json.dumps(event),
+#         "headers": {
+#             "Content-Type": "application/json"
+#         }
+#     }
+# EOF
+# }
 
 resource "time_sleep" "wait_for_cce" {
   create_duration = "30s"
@@ -385,9 +385,9 @@ resource "flexibleengine_cce_node_pool_v3" "pool" {
   flavor_id = "s6.xlarge.2"
   key_pair = flexibleengine_compute_keypair_v2.keypair.name
   initial_node_count = 1
-  scale_enable = true
+  scale_enable = false
   min_node_count = 1
-  max_node_count = 5
+  max_node_count = 1
   type = "vm"
   labels = {
     pool = "${var.project}-pool"
@@ -402,5 +402,3 @@ resource "flexibleengine_cce_node_pool_v3" "pool" {
     volumetype = "SATA"
   }
 }
-
-
